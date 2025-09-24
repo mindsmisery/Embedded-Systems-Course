@@ -1,64 +1,102 @@
 #include <iostream> 
 #include <vector>
 #include <string>
-#include <map>
+#include <unordered_map>
+#include <limits.h>
 using namespace std;
 
 // MAP-BASED
 void checkTemperatureWithMap() { // void returns no value
-    map<string, double> dayAndTemperature =  { {"Monday", 2.32}, {"Tuesday", 21.85}, {"Wednesday", 35.58}, {"Thursday", 19.46}, {"Friday", 25.11}, {"Saturday", 10.06}, {"Sunday", 18.20} };
-    char weatherClass;
+    // The map runs into a bizarre problem where it prints out days in an alphabetical order. 
+    unordered_map<string, double> dayAndTemperature =  { {"Sunday", 18.20}, {"Saturday", 10.06}, {"Friday", 25.11}, {"Wednesday", 35.58},{"Thursday", 19.46}, {"Tuesday", 21.85}, {"Monday", 2.32}};
+    string warmestDay;
+    string temperatureClass;
+    double maxTemperature = INT_MIN;
+    double averageTemperature = 0.0;
     
     for (auto& element : dayAndTemperature) {
+        int randomNumber;
+        char weatherClass;
         string day = element.first;
         double temperature = element.second;
-
+        
         if (temperature < 10) {
-            weatherClass = 'R';
-        } else if (10 <= temperature <= 20) {
-            weatherClass = 'C';
+            temperatureClass = "cold";
+        } else if (temperature >= 10 && temperature <= 20) {
+            temperatureClass = "ok";
         } else if (temperature > 20) {
-            weatherClass = 'S';
+            temperatureClass = "warm";
         }
 
-        cout << day << " : " << temperature << "°C" << " || Weather:  " << weatherClass << endl;
+        randomNumber = rand() % 11;
+
+        if (randomNumber < 3) {
+            weatherClass = 'S';
+        } else if (randomNumber >= 3 && randomNumber <= 5) {
+            weatherClass = 'F';
+        } else if (randomNumber >= 6 && randomNumber <= 8) {
+            weatherClass = 'R';
+        } else {
+            weatherClass = 'T';
+        }
+
+        if (temperature > maxTemperature) {
+            maxTemperature = temperature;
+            warmestDay = day;
+        }
+
+        averageTemperature = averageTemperature + temperature;
+        cout << "[" << weatherClass << "] " << day << " : " << temperature << "°C" << " - Temperature is " << temperatureClass << endl;
     }
+
+    averageTemperature = averageTemperature / 7;
+
+    cout << "\n| The warmest day of the week is " << warmestDay << " at " << maxTemperature << "°C" << endl;
+    cout << "| Average temperature of the week is " << averageTemperature << "°C" << endl;
+    cout << "\nReturning to menu selection. . ." << endl << endl;
 }
 
 // STRING-DOUBLE-BASED
 void checkTemperatureWithStringDouble () {
-vector<string> days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-vector<double> temperature = {2.32, 21.85, 20.58, 19.46, 25.11, 30.06, 18.20}; /* the double is a data type for floats */
-tuple<string, double> warmDay = {days[0], temperature[0]};
-string temperatureClass;
+    vector<string> days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    vector<double> temperature = {2.32, 21.85, 20.58, 19.46, 25.11, 30.06, 18.20}; /* the double is a data type for floats */
+    pair<string, double> warmestDay = {days[0], temperature[0]};
+    string temperatureClass;
 
-for (int i=0; i < days.size(); i++) { //range-based for loop (for-each) -- i is an integer; days.size() returns the number of days, true as long as number of days it more than 0. increase i by 1.
+    for (int i=0; i < days.size(); i++) { //range-based for loop (for-each) -- i is an integer; days.size() returns the number of days, true as long as number of days it more than 0. increase i by 1.
     
     if (temperature[i] < 10) {
         temperatureClass = "cold";
-    } else if (10 <= temperature[i] <= 20) {
+    } else if (temperature[i] >= 10 && temperature[i] <= 20) {
         temperatureClass = "ok";
     } else if (temperature[i] > 20) {
         temperatureClass = "warm";
     }
     
-    cout << days[i] << " : " << temperature[i] << "°C which is " << temperatureClass << endl;
+    cout << days[i] << " : " << temperature[i] << "°C - Temperature is " << temperatureClass << endl;
 
-    if (temperature[i] > get<1>(warmDay)) {
-        warmDay = {days[i], temperature[i]};
+    if (temperature[i] > get<1>(warmestDay)) {
+        warmestDay = {days[i], temperature[i]};
     }
 }
 
-cout << "\nThe warmest day is " << get<0>(warmDay) << " at " << get<1>(warmDay) << "°C" << endl;
+cout << "\n| The warmest day of the week is " << get<0>(warmestDay) << " at " << get<1>(warmestDay) << "°C" << endl;
 }
 
+// MAIN FUNCTION
 int main() {
+    srand(time(0));
     char x;
     while (true) {
-        cout << "\nTo use string/double-based temperature check, press 1.\nTo use map-based temperature check, press 2." << endl;
+        cout << "\nTo use string/double-based temperature check, enter 1.\nTo use map-based temperature check, enter 2.\nTo quit, enter q." << endl;
         cout << "Choice: ";
         cin >> x;
-        cout << "You chose  " << x << endl;
+
+        if (x == 'q') {
+            cout << "\nQuitting weather program. . ." << endl;
+        } else {
+            cout << "\nRunning weather program. . ." << endl << endl;
+        }
 
         if (x =='1') {
             checkTemperatureWithStringDouble();
